@@ -18,7 +18,7 @@ import plotly.graph_objs as gr
 
 mydataframe = pd.read_csv('VAZOES.ZIP', compression='zip', sep=';', 
                           encoding='ISO-8859-1', skiprows=16, parse_dates=['Data'], 
-                          dayfirst=True, index_col='Data', decimal = '.' )
+                          dayfirst=True, index_col='Data', decimal = ',' )
 
 yearmean = mydataframe.groupby([pd.Grouper(freq='Y')]).mean()
 
@@ -35,3 +35,9 @@ trace2 = gr.Scatter(
 
 data = [trace1, trace2]
 plot(data, filename='test')
+
+
+"""
+Tentar uma abordagem diferente, gerar uma nova série a partir das medições diárias,
+agrupar a partir de anos hidrológicos
+"""
