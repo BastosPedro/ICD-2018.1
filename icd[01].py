@@ -7,12 +7,13 @@ Created on Fri Jul 27 17:04:08 2018
 """
 """
 Esse codigo cobre as questoes de abrir e manipular dados, plotar dados
-e obter gráficos interativos. Estranhamente, no momento de criar um novo
-dataframe a partir do original, alguns dados "somem", como a Média Diária,
-por exemplo, isso precisa ser revisto. RESOLVIDO
+e obter gráficos interativos. 
+
+Estranhamente, no momento de criar um novo dataframe a partir do original, 
+alguns dados "somem", como a Média Diária, por exemplo, isso precisa ser revisto. RESOLVIDO
 
 Tentar uma abordagem diferente, gerar uma nova série a partir das medições diárias,
-agrupar a partir de anos hidrológicos MEDIÇÕES DIÁRIAS FEITAS
+agrupar a partir de anos hidrológicos. MEDIÇÕES DIÁRIAS FEITAS
 
 """
 
@@ -39,8 +40,10 @@ aux = mydataframe[['Vazao01', 'Vazao02', 'Vazao03', 'Vazao04', 'Vazao05', 'Vazao
                    'Vazao19', 'Vazao20', 'Vazao21', 'Vazao22', 'Vazao23', 'Vazao24',
                    'Vazao25', 'Vazao26', 'Vazao27', 'Vazao28', 'Vazao29', 'Vazao30', 'Vazao31']]
 
+aux = aux.groupby(pd.Grouper(freq='M')).mean()
+
 #preenchendo buracos
-for x in range (0, 242):
+for x in range (0, 248):
     if aux.iloc[x].name.daysinmonth == 28:
         for y in range (0,28):
             if pd.isna(aux.iloc[x][y]):
@@ -59,27 +62,19 @@ for x in range (0, 242):
                 aux.iloc[x][y] = 0
 
 
-auxdataframe = pd.DataFrame()
-aux2dataframe = pd.DataFrame()
+newdataframe = pd.DataFrame()
 
-for x in range (0, 65):
-    test = [auxdataframe, aux.iloc[x]]
-    auxdataframe = pd.concat(test, ignore_index=True)
-auxdataframe.dropna(how='all', inplace=True)
-auxdataframe = auxdataframe.set_index(pd.date_range('1995-01-01', '2000-05-31', freq='D'))
 
-for x in range (65, 242):
-    test = [aux2dataframe, aux.iloc[x]]        
-    aux2dataframe = pd.concat(test, ignore_index=True)       
-aux2dataframe.dropna(how='any', inplace=True)
-aux2dataframe = aux2dataframe.set_index(pd.date_range('2000-12-01', '2015-08-31', freq='D'))
-
-test = [auxdataframe, aux2dataframe]
-newdataframe = pd.concat(test, ignore_index=False)
-del aux, auxdataframe, aux2dataframe, test, x, y #comendo memória a toa
+for x in range (0,248):
+    test = [newdataframe, aux.iloc[x]]
+    newdataframe = pd.concat(test, ignore_index=True)
+newdataframe.dropna(how='all', inplace=True)
+newdataframe = newdataframe.set_index(pd.date_range('1995-01-01', '2015-08-31', freq='D'))
+    
+del aux, test, x, y #comendo memória a toa
 
 monthlymean = newdataframe.groupby([pd.Grouper(freq='M')]).mean()
-monthlymean.dropna(how='any', inplace=True) #deixa o gráfico contínuo
+
 
 trace = gr.Scatter(
         x = monthlymean.index, 
