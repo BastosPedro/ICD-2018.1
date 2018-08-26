@@ -18,9 +18,10 @@ agrupar a partir de anos hidrológicos. MEDIÇÕES DIÁRIAS FEITAS
 """
 
 import pandas as pd
-from plotly.offline import plot
+import numpy as np
 import plotly.graph_objs as gr
-#import cufflinks as cf #cufflinks bugado?
+import plotly.figure_factory as ff
+from plotly.offline import plot
 
 mydataframe = pd.read_csv('VAZOES.ZIP', compression='zip', sep=';', 
                           encoding='ISO-8859-1', skiprows=16, parse_dates=['Data'], 
@@ -29,16 +30,8 @@ mydataframe = pd.read_csv('VAZOES.ZIP', compression='zip', sep=';',
 mydataframe.index = pd.to_datetime(mydataframe.index)
 
 
-#mydataframe = mydataframe.reindex(pd.date_range('1995-01-01', '2015-08-31', freq = 'M'))
-#mesmo settando as variáveis corretas, o reindex anula tudo :/
 
-
-#conveniência
-aux = mydataframe[['Vazao01', 'Vazao02', 'Vazao03', 'Vazao04', 'Vazao05', 'Vazao06',
-                   'Vazao07', 'Vazao08', 'Vazao09', 'Vazao10', 'Vazao11', 'Vazao12',
-                   'Vazao13', 'Vazao14', 'Vazao15', 'Vazao16', 'Vazao17', 'Vazao18',
-                   'Vazao19', 'Vazao20', 'Vazao21', 'Vazao22', 'Vazao23', 'Vazao24',
-                   'Vazao25', 'Vazao26', 'Vazao27', 'Vazao28', 'Vazao29', 'Vazao30', 'Vazao31']]
+aux = mydataframe[list(mydataframe.columns[15:46])]
 
 aux = aux.groupby(pd.Grouper(freq='M')).mean()
 
@@ -73,13 +66,37 @@ newdataframe = newdataframe.set_index(pd.date_range('1995-01-01', '2015-08-31', 
     
 del aux, test, x, y #comendo memória a toa
 
-monthlymean = newdataframe.groupby([pd.Grouper(freq='M')]).mean()
+newdataframe = newdataframe.replace(0, np.nan)
+
+def drawGantt(data):
+    intervals = []
+    d = []
+    inter = []
+    
+    for indexCount, indexValue in data.itertuples():
+        if pd.isna(indexValue) == False:
+            d.append(indexCount)
+        else:
+            if d != []:
+                intervals.append(d)
+            d = []
+    for interval in intervals:
+        inter.append(dict(Task='Vazao', Start = min(interval), Finish = max(interval)))
+        
+    fig = ff.create_gantt(inter)
+    plot(fig, filename='testGantt.html')
 
 
-trace = gr.Scatter(
-        x = monthlymean.index, 
-        y = monthlymean[0],
-        name = 'Média mensal'
-        )
+def plotMonthlyMean (data):
+    monthlymean = data.groupby([pd.Grouper(freq='M')]).mean()
 
-plot([trace], filename='test')
+
+    trace = gr.Scatter(
+            x = monthlymean.index, 
+            y = monthlymean[0],
+            name = 'Média mensal'
+            )
+
+    plot([trace], filename='test')
+    
+drawGantt(newdataframe)
