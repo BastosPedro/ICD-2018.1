@@ -83,7 +83,7 @@ def drawGantt(data):
     for interval in intervals:
         inter.append(dict(Task='Vazao', Start = min(interval), Finish = max(interval)))
         
-    fig = ff.create_gantt(inter)
+    fig = ff.create_gantt(inter, group_tasks = True)
     plot(fig, filename='testGantt.html')
 
 
