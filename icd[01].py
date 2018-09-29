@@ -68,6 +68,14 @@ del aux, test, x, y #comendo memória a toa
 
 newdataframe = newdataframe.replace(0, np.nan)
 
+
+def savetoHDF5(data):
+    data.to_hdf('store.h5', key='test', mode='w')
+
+savetoHDF5(newdataframe)
+
+####################################gráficos################################################################
+
 def drawGantt(data):
     intervals = []
     d = []
@@ -83,7 +91,7 @@ def drawGantt(data):
     for interval in intervals:
         inter.append(dict(Task='Vazao', Start = min(interval), Finish = max(interval)))
         
-    fig = ff.create_gantt(inter, group_tasks = True)
+    fig = ff.create_gantt(inter)
     plot(fig, filename='testGantt.html')
 
 
@@ -99,4 +107,4 @@ def plotMonthlyMean (data):
 
     plot([trace], filename='test')
     
-drawGantt(newdataframe)
+#drawGantt(newdataframe)
