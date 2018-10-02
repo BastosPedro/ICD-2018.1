@@ -6,8 +6,7 @@ Created on Fri Jul 27 17:04:08 2018
 @author: pedro
 """
 """
-Esse codigo cobre as questoes de abrir e manipular dados, plotar dados
-e obter gráficos interativos. 
+Esse codigo cobre as questoes de abrir e manipular dados e obter gráficos interativos. 
 
 Estranhamente, no momento de criar um novo dataframe a partir do original, 
 alguns dados "somem", como a Média Diária, por exemplo, isso precisa ser revisto. RESOLVIDO
